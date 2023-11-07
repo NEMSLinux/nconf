@@ -57,7 +57,8 @@ abstract class NConf_Deployment_Modules
             
 
             // add status to history log
-            NConf_Deployment::history($destination["title"], $status);
+            //NConf_Deployment::history($destination["title"], $status);
+            (new NConf_Deployment)->history($destination["title"], $status);
         }
     }
 

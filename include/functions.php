@@ -63,7 +63,7 @@ function escape_string($string){
     global $dbh;
     # Strip slashes if magic_quotes_gpc is ON (DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.)
     # Reverse magic_quotes_gpc/magic_quotes_sybase effects on those vars if ON.
-    if (get_magic_quotes_gpc() ){
+    if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() ){
         message('DEBUG', "magic_quotes_gpc is ON: using stripslashes to correct it");
         $string = stripslashes($string);
     }
@@ -1653,11 +1653,6 @@ function create_menu($result){
     $group_bevore = "";
     $block_i = 0;
     foreach ($result as $nav_class){
-// Hide menus that are for Nagios, but shouldn't be used on NEMS (will only break things)
-if (
-  trim($nav_class['grouping']) != 'Nagios servers'
-) {
-
         if ($nav_class["grouping"] != $group_bevore){
 
             echo '</table>
@@ -1723,7 +1718,6 @@ if (
         
         }
     }
-}
     //END foreach
 
     // Last Block has to be closed :
