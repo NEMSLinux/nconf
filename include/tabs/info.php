@@ -27,4 +27,3 @@
 # activate movable content
 echo js_prepare("initShowHideDivs();");
 ?>
-

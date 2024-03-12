@@ -70,38 +70,38 @@ if(  ( ( isset($_POST["delete"]) ) AND ($_POST["delete"] == "yes") ) AND
         }
 
         // Delete entry
-        $query = 'DELETE FROM ConfigItems
-                    WHERE id_item='.$id;
+	$query = 'DELETE FROM ConfigItems WHERE id_item=' . $id;
 
-        $result = db_handler($query, "result", "Delete entry");
-        if ( $result ){
-            # increase deleted items
-            if (mysqli_affected_rows() > 0){
-                $deleted_items++;
-            }
+	$result = db_handler($query, "result", "Delete entry");
+	if ($result) {
+	    $affected_rows = mysqli_affected_rows($result); // Pass the database connection link as a parameter
 
-            message ($debug, '', "ok");
+	    if ($affected_rows > 0) {
+	        $deleted_items++;
 
-            # Special service handling
-            if ( ($class == "service") AND !empty($Host_ID) ){
-                # Enter also the Host_ID of the deleted service into the History table
-                history_add("removed", $class, $item_name, $Host_ID);
-            }else{
-                # Enter normal deletion, which object is deleted, without a "parent / linked" id
-                history_add("removed", $class, $item_name );
-            }
+	        // Special service handling
+	        if ($class == "service" && !empty($Host_ID)) {
+	            // Enter also the Host_ID of the deleted service into the History table
+	            history_add("removed", $class, $item_name, $Host_ID);
+	        } else {
+	            // Enter normal deletion, which object is deleted, without a "parent / linked" id
+	            history_add("removed", $class, $item_name);
+	        }
 
-            // Go to next page without pressing the button (also have a look if class is not host, otherwise go back to overview )
-            if ( !empty($_POST["from"]) AND $class != "host" ){
-                $url = $_POST["from"];
-            }else{
-                $url = $_SESSION["after_delete_page"];
-            }
-                
-        }elseif (DB_NO_WRITES != 1){
-            message($error, 'Error deleting '.$id.':'.$query);
-        }
-    
+	        // Redirect to the appropriate page
+	        if (!empty($_POST["from"]) && $class != "host") {
+	            $url = $_POST["from"];
+	        } else {
+	            $url = $_SESSION["after_delete_page"];
+	        }
+	    } else {
+	        // Handle case where no rows were affected
+	        message($warning, "No rows were affected by the deletion.");
+	    }
+	} elseif (DB_NO_WRITES != 1) {
+	    // Handle database error
+	    message($error, 'Error deleting ' . $id . ':' . $query);
+	}
 
     } // foreach
 

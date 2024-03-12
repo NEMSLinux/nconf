@@ -188,7 +188,7 @@ if (AUTH_TYPE == "file"){
     }
 
     # needed database reload, otherwise the connection is lost
-    relaod_nconf_db_connection();
+    reload_nconf_db_connection();
 
 ##############################################################################################
 

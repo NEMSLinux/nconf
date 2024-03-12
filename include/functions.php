@@ -335,10 +335,10 @@ function history_add($action, $name, $value, $fk_id_item = 'NULL', $feature = ''
 
 
 # reloads the db connection and selects the db
-# (must be user after auth by sql)
-function relaod_nconf_db_connection(){
+# (must be used after auth by sql)
+function reload_nconf_db_connection(){
     $dbh = mysqli_connect(DBHOST,DBUSER,DBPASS);
-    mysqli_select_db($dbhDBNAME);
+    mysqli_select_db($dbh,DBNAME);
 }
 
 
@@ -1251,43 +1251,48 @@ function add_attribute($id, $id_attr, $attr_value){
             $attr_datatype = db_templates("attr_datatype", $attr["key"]);
 
             # save assign_one/assign_many/assign_cust_order in ItemLinks
-            while ( $many_attr = each($attr["value"]) ){
-                # if value is empty go to next one
-                if (!$many_attr["value"]){
-                    continue;
-                }else{
+		foreach ($attr["value"] as $many_attr) {
+		    // Test if $many_attr is an array
+		    if (is_array($many_attr)) {
+		        // Check if the "value" key exists and is not empty
+		        if (!empty($many_attr["value"])) {
+		            // Proceed with your code
+		            $check = check_link_as_child_or_bidirectional($attr["key"], $class_id);
+		            if ($check === TRUE) {
+		                $query = 'INSERT INTO ItemLinks
+		                    (fk_id_item, fk_item_linked2, fk_id_attr, cust_order)
+		                    VALUES
+		                    ('.$many_attr["value"].', '.$id.', '.$attr["key"].', '.$cust_order.')
+		                    ';
+		            } else {
+		                $query = 'INSERT INTO ItemLinks
+		                    (fk_id_item, fk_item_linked2, fk_id_attr, cust_order)
+		                    VALUES
+		                    ('.$id.', '.$many_attr["value"].', '.$attr["key"].', '.$cust_order.')
+		                    ';
+		            }
 
-                    # create insert query
-                    $check = check_link_as_child_or_bidirectional($attr["key"], $class_id);
-                    if ( $check === TRUE ){
-                        $query = 'INSERT INTO ItemLinks
-                            (fk_id_item, fk_item_linked2, fk_id_attr, cust_order)
-                            VALUES
-                            ('.$many_attr["value"].', '.$id.', '.$attr["key"].', '.$cust_order.')
-                            ';
-                    }else{
-                        $query = 'INSERT INTO ItemLinks
-                            (fk_id_item, fk_item_linked2, fk_id_attr, cust_order)
-                            VALUES
-                            ('.$id.', '.$many_attr["value"].', '.$attr["key"].', '.$cust_order.')
-                            ';
-                    }    
+		            if (DB_NO_WRITES != 1) {
+		                $result_insert = db_handler($query, "insert", "Insert");
+		                if ($result_insert) {
+		                    history_add("assigned", $attr["key"], $many_attr["value"], $id, "resolve_assignment");
+		                    message('DEBUG', '', "ok");
+		                } else {
+		                    message('ERROR', 'Error when linking '.$many_attr["value"].' with '.$attr["key"].':'.$query);
+		                }
+		            }
 
-                    if (DB_NO_WRITES != 1) {
-                        $result_insert = db_handler($query, "insert", "Insert");
-                        if ( $result_insert ){
-                            history_add("assigned", $attr["key"], $many_attr["value"], $id, "resolve_assignment");
-                            message ('DEBUG', '', "ok");
-                            //message ('DEBUG', 'Successfully linked "'.$many_attr["value"].'" with '.$attr["key"]);
-                        }else{
-                            message ('ERROR', 'Error when linking '.$many_attr["value"].' with '.$attr["key"].':'.$query);
-                        }
-                    }
+		            // Increase assign_cust_order if needed
+		            if ($attr_datatype == "assign_cust_order") {
+		                $cust_order++;
+		            }
+		        }
+		    } else {
+		        // Handle the case where $many_attr is not an array (perhaps log an error or skip)
+		        message('ERROR', 'Invalid data format for $many_attr: ' . var_export($many_attr, true));
+		    }
+//		}
 
-                    # increase assign_cust_order if needed
-                    if ($attr_datatype == "assign_cust_order") $cust_order++;
-
-                }
             }
         }
     }
@@ -1454,7 +1459,7 @@ function check_file($check, $files, $outcome = TRUE, $failed_message = ''){
             if ( call_user_func($check, $file) != $outcome ){
                 # if no message is set
                 if ( empty($failed_message) ) $failed_message = '"'.$check.'" function failed for : ';
-                NCONF_DEBUG::set($file, 'CRITICAL', $failed_message);
+                NConf_DEBUG::set($file, 'CRITICAL', $failed_message);
                 $failed = TRUE;
             }
         }

@@ -123,6 +123,3 @@ if ( empty($type) AND empty($ajax) ){
 
 
 ?>
-
-
-
