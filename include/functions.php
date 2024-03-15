@@ -1252,8 +1252,8 @@ function add_attribute($id, $id_attr, $attr_value){
 
             # save assign_one/assign_many/assign_cust_order in ItemLinks
 		foreach ($attr["value"] as $many_attr) {
-		    // Test if $many_attr is an array
-		    if (is_array($many_attr)) {
+		    // Test if $many_attr is an array and that array contains a value
+                    if (is_array($many_attr) && !empty(array_filter($many_attr, 'strlen'))) {
 		        // Check if the "value" key exists and is not empty
 		        if (!empty($many_attr["value"])) {
 		            // Proceed with your code
@@ -1289,7 +1289,8 @@ function add_attribute($id, $id_attr, $attr_value){
 		        }
 		    } else {
 		        // Handle the case where $many_attr is not an array (perhaps log an error or skip)
-		        message('ERROR', 'Invalid data format for $many_attr: ' . var_export($many_attr, true));
+                        // Generates false errors when inserting new check commands, so don't output error.
+		        // message('ERROR', 'Invalid data format for $many_attr: ' . var_export($many_attr, true));
 		    }
 //		}
 

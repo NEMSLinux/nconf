@@ -74,7 +74,7 @@ if(  ( ( isset($_POST["delete"]) ) AND ($_POST["delete"] == "yes") ) AND
 
 	$result = db_handler($query, "result", "Delete entry");
 	if ($result) {
-	    $affected_rows = mysqli_affected_rows($result); // Pass the database connection link as a parameter
+	    $affected_rows = mysqli_affected_rows($dbh); // Pass the database connection link as a parameter
 
 	    if ($affected_rows > 0) {
 	        $deleted_items++;
