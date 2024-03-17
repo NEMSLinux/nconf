@@ -51,7 +51,6 @@ if ( isset($_SESSION["submited"]) AND !empty($_POST["check_command_changed"]) ){
     echo '<meta http-equiv="refresh" content="0; url='.$_SESSION["go_back_page"].'">';
     NConf_DEBUG::set('<a href="'.$_SESSION["go_back_page"].'"> handle_item (back) </a>', 'INFO', "<br>redirecting to");
 
-    
 }elseif ( isset($_SESSION["submited"]) ){
 
     // Write2DB (feedback: $step2)

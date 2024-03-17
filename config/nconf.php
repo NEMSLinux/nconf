@@ -37,15 +37,15 @@ define('TEMPLATE_DIR', 'nems_nconf');
 #
 # Debug
 #
-define("DEBUG_MODE",     0); # [0|1]
-define("DEBUG_GENERATE", 3); # [1=ERROR|2=WARN|3=INFO|4=DEBUG|5=TRACE]
+define("DEBUG_MODE",     1); # [0|1]
+define("DEBUG_GENERATE", 5); # [1=ERROR|2=WARN|3=INFO|4=DEBUG|5=TRACE]
 define("DB_NO_WRITES",   0); # [0|1] Experimental, use with CAUTION!
 
 #
 # Defines how many seconds to wait on auto redirects.
 # Used mostly after adding, modifying or deleting an item. 
 #
-define('REDIRECTING_DELAY', "1");
+define('REDIRECTING_DELAY', "9999");
 
 #
 # General switch to enable / disable config deployment. 

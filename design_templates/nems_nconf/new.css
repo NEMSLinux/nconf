@@ -273,7 +273,8 @@ img {
 
 
 .debbug_query {
-background-color:#D0D0D0;
+background-color: rgba(0,0,0,.6);
+border: solid 1px #666;
 font-family:Courier New,Courier;
 margin-left:10px;
 }

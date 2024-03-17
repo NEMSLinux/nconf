@@ -1016,10 +1016,18 @@ function db_handler($query, $output = "result", $debug_title = "query"){
         message ('INFO', "DB_NO_WRITES activated, no deletions or modifications will be performed");
     }else{
         $result = mysqli_query($dbh,$query);
+        $response_data = 'Resulting Data:<br />';
         // new DEBUG output
         $debug_query        = NConf_HTML::text_converter("sql_uppercase", $query);
         $debug_query_output = NConf_HTML::swap_content($debug_query, 'Query', FALSE, FALSE);
-        $debug_data_result  = '<br>(Result output not yet defined)';
+        if ($result) {
+          while ($row = mysqli_fetch_assoc($result)) {
+            $response_data .= print_r($row, true);
+          }
+        } else {
+          $response_data = "Query failed: " . mysqli_error($dbh);
+        }
+        $debug_data_result  = '<br /><br />Result:<br /><pre>' . print_r($result,true) . '<br /><br />' . $response_data . '</pre>';
 
         if ( $result ){
             # Output related stuff
