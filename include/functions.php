@@ -1048,7 +1048,11 @@ function db_handler($query, $output = "result", $debug_title = "query"){
                     break;
                 case "getOne":
                     $first_row = mysqli_fetch_row($result);
-                    $return = $first_row[0];
+                    if ($first_row !== null) {
+                      $return = $first_row[0];
+                    } else {
+                      $return = null;
+                    }
                     # DEBUG output with new API module:
                     //$debug_data_result  = NConf_HTML::text('<b>Result: getOne:</b>'.$return);
                     break;
