@@ -8,7 +8,7 @@
 #
 
 # The directory where NConf is located
-define('NCONFDIR', '/var/www/html/nconf');
+define('NCONFDIR', '/var/www/nconf');
 
 # Manual installation:
 # Please replace the  $nconfdir  placeholder with the path to NConf as follows:
